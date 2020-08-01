@@ -178,9 +178,9 @@ class Email:
 
 if __name__ == '__main__':
     smtp_server = 'smtp.exmail.qq.com'
-    target_email = "122789454@qq.com"
-    account = "2060682896"
+    target_email = "dxxxxxx@qq.com"
+    account = "xxxxxxx"
     mail_postfix = 'qq.com'
-    password = "ktdsxorambhicibi"
+    password = "xxxxxxxxx"
     pop3_server = "pop.qq.com"
     Email(account, mail_postfix, password, pop3_server, smtp_server, target_email, sys.argv[1], sys.argv[2]).main()
