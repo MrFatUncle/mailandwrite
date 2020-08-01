@@ -165,22 +165,22 @@ class Email:
         code = ""
         for i in range(6):
             ch = chr(random.randrange(ord('0'), ord('9') + 1))
-            str += ch
+            code += ch
         self.code = code
         return code
 
     def mail_send_server(self):
-        server = smtplib.SMTP(self.smtp_server)
+        server = smtplib.SMTP_SSL(self.smtp_server)
         server.connect(self.smtp_server)
         server.login(self.account, self.password)
         return server
 
 
 if __name__ == '__main__':
-    smtp_server = 'smtp.exmail.qq.com'
-    target_email = "dxxxxxx@qq.com"
-    account = "xxxxxxx"
+    smtp_server = 'smtp.qq.com'
+    target_email = "123@qq.com"
+    account = "123"
     mail_postfix = 'qq.com'
-    password = "xxxxxxxxx"
+    password = "123"
     pop3_server = "pop.qq.com"
     Email(account, mail_postfix, password, pop3_server, smtp_server, target_email, sys.argv[1], sys.argv[2]).main()
