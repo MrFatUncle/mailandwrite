@@ -86,9 +86,10 @@ class Email:
                 print('%sAttachment: %s' % ('  ' * indent, content_type))
 
     def main(self):
-        send_server = self.mail_send_server()
+        # send_server = self.mail_send_server()
         receive_server = self.mail_receive_server()
-        self.send_mail(send_server)
+        # self.send_mail(send_server)
+        # send_server.close()
         # 收邮件并检查code
         result = self.receive_check(receive_server)
         if result:
@@ -151,7 +152,7 @@ class Email:
         second = 0
         while self.receive_mail_first(server) != self.code:
             second += 10
-            time.sleep(second)
+            time.sleep(10)
             if second >= self.total_receive_minutes * 60:
                 return False
 
