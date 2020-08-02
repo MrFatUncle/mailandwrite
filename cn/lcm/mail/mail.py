@@ -31,7 +31,7 @@ class Email:
     # 总计接收30分钟
     total_receive_minutes = 30
 
-    def __init__(self, account, mail_postfix, password, pop3_server, smtp_server, target_email, subject, info):
+    def __init__(self, account, mail_postfix, password, pop3_server, smtp_server, target_email, subject, info, model):
         self.account = account
         self.password = password
         self.pop3_server = pop3_server
@@ -40,6 +40,7 @@ class Email:
         self.info = info
         self.subject = subject
         self.mail_postfix = mail_postfix
+        self.model = model
 
     def guess_charset(self, msg):
         charset = msg.get_charset()
@@ -96,7 +97,7 @@ class Email:
             print("check mail success")
         receive_server.quit()
 
-    def receive_mail(self, server):
+    def receive_mail(self, server, receive_index):
 
         # stat()返回邮件数量和占用空间:
         print('Messages: %s. Size: %s' % server.stat())
@@ -106,6 +107,10 @@ class Email:
         print(mails)
         # 获取最新一封邮件, 注意索引号从1开始:
         index = len(mails)
+        if len(mails) < 1:
+            return "none"
+        if len(mails) < receive_index:
+            return "index out of range"
         resp, lines, octets = server.retr(index)
         # lines存储了邮件的原始文本的每一行,
         # 可以获得整个邮件的原始文本:
@@ -121,7 +126,7 @@ class Email:
     # 生成code并发送邮件
     def send_mail(self, server):
 
-        code = self.range_code()
+        code = self.model + "_" + self.range_code()
         code_info = "此次校验码为：" + code + "，请直接将此校验码回复即可。30分钟内有效"
         all_info = self.info + code_info
         # 生成code并发送
@@ -150,7 +155,7 @@ class Email:
         # 每10秒收一次邮件
         first_msg = self.receive_mail_first(server)
         second = 0
-        while self.receive_mail_first(server) != self.code:
+        while self.receive_check(server):
             second += 10
             time.sleep(10)
             if second >= self.total_receive_minutes * 60:
@@ -158,8 +163,17 @@ class Email:
 
         return True
 
+    def receive_check(self, server):
+        result = False
+
+        for index in range(1, 6):
+            receive_code = self.receive_mail(server, index)
+            if receive_code == self.code:
+                return True
+        return result
+
     def receive_mail_first(self, server):
-        first_msg = self.receive_mail(server)
+        first_msg = self.receive_mail(server, 1)
         return first_msg
 
     def range_code(self):
@@ -184,4 +198,4 @@ if __name__ == '__main__':
     mail_postfix = 'qq.com'
     password = "123"
     pop3_server = "pop.qq.com"
-    Email(account, mail_postfix, password, pop3_server, smtp_server, target_email, sys.argv[1], sys.argv[2]).main()
+    Email(account, mail_postfix, password, pop3_server, smtp_server, target_email, sys.argv[1], sys.argv[2], sys.argv[3]).main()
